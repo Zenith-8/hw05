@@ -11,32 +11,34 @@
  *  Program Description: Uses a series of randomly generated codes with parameters input by the user in order to calculate the maximum value of the digits produced
  *
  ******+---*----**-*-------*---***-**-*--***-*--****************************/
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 #define LOOPMAX 20
 
 void input(int* seedValue, int* powerLimit);
-void processCodes(int seedValue, int powerLimit, int *max, int *min);
+void processCodes(int seedValue, int powerLimit, int *max, int *min, int *maxIndex, int *minIndex);
 int generateCode(int ceiling);
 int calcSum(int code);
 void printOutput(int max, int maxIndex, int min, int minIndex);
 
 int main(void)
 {
-  int seedValue;
-  int powerLimit;
-  int max;
-  int min;
-  int maxIndex;
-  int minIndex;
+  int seedValue; // The value of the seed input by the user (used in srand())
+  int powerLimit; // The value of the power limit input by the user, controls 10^powerLimit
+  int max;  // The maximum value produced
+  int min;  // The minimum value produced
+  int maxIndex; // The index of the maximum value
+  int minIndex; // The index of the minimum value
 
   input(&seedValue, &powerLimit);
   srand(seedValue);
 
-  processCodes(seedValue, powerLimit, &max, &min);
+  processCodes(seedValue, powerLimit, &max, &min, &maxIndex, &minIndex);
 
-  printOutput()
+  printOutput(max, maxIndex, min, minIndex);
   return 0;
 }
 
@@ -60,31 +62,33 @@ int main(void)
  ******+-*-----**--*-*-*-*-*-*--*---****--**-*--****************************/
 void processCodes(int seedValue, int powerLimit, int* max, int* min, int* maxIndex, int* minIndex)
 { 
-  int i;
-  int sum;
-  int code;
+  int i; // Used as iterator
+  int sum;  // Keeps track of total sum
+  int code; // Value of randomly generated code
 
   code = generateCode(powerLimit);
   *max = calcSum(code);
   *min = calcSum(code);
+  *maxIndex = 1;
+  *minIndex = 1;
 
   for(i = 0; i < LOOPMAX - 1; i++)
   {
     code = generateCode(powerLimit);
+    printf("\n%d\n",code);
     
     sum = calcSum(code);
 
     if(sum > *max)
     {
       *max = sum;
+      *maxIndex = i + 1;
     } else if(sum < *min)
     {
       *min = sum;
+      *minIndex = i + 1;
     }
   }
-  printf("\nMax: %d", *max);
-  printf("\nMin: %d", *min);
-
 }
 
 /*****+-*-----**--*-*-*-*-*-*--*---****--**-*--*****************************
@@ -93,7 +97,7 @@ void processCodes(int seedValue, int powerLimit, int* max, int* min, int* maxInd
  *
  *  Name of Function: calcSum
  *
- *  Function Return Type:int
+ *  Function Return Type: int
  *
  *  Parameters (list data type, name, and comment one per line):
  *    1. int code - represents the code to be processsed
@@ -104,7 +108,7 @@ void processCodes(int seedValue, int powerLimit, int* max, int* min, int* maxInd
 
 int calcSum(int code)
 {
-  int sum;
+  int sum; // Value to be returned, keeps track of total sum of digits in code
   sum = 0;
 
   do
@@ -158,13 +162,30 @@ void input(int* seedValue, int* powerLimit)
 
 int generateCode(int ceiling)
 {
-  return (rand() % (ceiling + 1));
+  return (rand() % (ceiling) + 1);
 }
+
+/*****+-*-----**--*-*-*-*-*-*--*---****--**-*--*****************************
+ *
+ *  Function Information
+ *
+ *  Name of Function: printOutput
+ *
+ *  Function Return Type: void
+ *
+ *  Parameters (list data type, name, and comment one per line):
+ *    1. int max - the maximum value produced
+ *    2. int min - the minimum value produced
+ *    3. int maxIndex - the index of the maximum value
+ *    4. int minIndex - the index of the minimum value 
+ *  Function Description: Prints the required output
+ *
+ ******+-*-----**--*-*-*-*-*-*--*---****--**-*--****************************/
 
 void printOutput(int max, int maxIndex, int min, int minIndex)
 {
   printf("\n-=-=-=-=-=-=-=-=-=-=-=-");
   printf("\nSmallest Sum #%d:%4d", minIndex, min);
-  printf("\nLargest Sum #%d:%4d", maxIndex, max);
-  printf("\n-=-=-=-=-=-=-=-=-=-=-=-";)
+  printf("\nLargest Sum #%d:%5d", maxIndex, max);
+  printf("\n-=-=-=-=-=-=-=-=-=-=-=-");
 }
